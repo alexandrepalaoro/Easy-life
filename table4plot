@@ -76,6 +76,4 @@ model1 = lm(y~x*z)
 
 table4plot(model1)
 
-data.frame(lower,estimate,upper)
-
 ###########################################

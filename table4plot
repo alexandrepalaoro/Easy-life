@@ -1,0 +1,81 @@
+#############################################################
+## Putting together a table with 95% confidence intervals  ##
+## and estimate values for ANCOVAS                         ##
+#############################################################
+
+# I made this function make my life easier when I want to see
+# estimate values and their CIs, while also facilitating the plot
+# This function was based on an ANCOVA with a three level factor
+# So I do not know how escalable it is, and it surely cannot be
+# used when you have random effects or phylogenetic effects.
+# But, with may work with gaussian GLMs, and, if you add a 
+# transformation for GLMs with other link functions, it may
+# work as well.
+# Cheers,
+
+
+table4plot = function(modelo){
+  niveis = length(modelo$xlevels[[1]])
+  coefs = coef(modelo)
+  CI = confint(modelo)
+  estimates = data.frame(rep(NA, length(coefs)),
+                         rep(NA, length(coefs)),
+                         rep(NA, length(coefs)),
+                         rep(NA, length(coefs)),
+                         rep(model1$xlevels[[1]]))
+  colnames(estimates) = c("lower.95","estimate","upper.95","measure","groups")
+  estimates$measure<-sort(factor(rep(c("intercept","slope"),niveis)))
+  
+  for(i in 1:length(coefs)){
+    if(i==1){
+      estimates[i,2]<-coefs[[1]]
+    } else  if(i>1 && i<niveis+1){
+      estimates[i,2]<-estimates[1,2]+coefs[[i]]
+    } else  if(i==niveis+1){
+      estimates[i,2]<-coefs[[i]]
+    } else  if(i>niveis+1){
+      estimates[i,2]<-estimates[niveis+1,2]+coefs[[i]]  
+    }
+  }
+  
+  for(i in 1:length(confint(model1)[,1])){
+    if(i==1){
+      estimates[i,1]<-CI[[1,1]]
+    } else  if(i>1 && i<niveis+1){
+      estimates[i,1]<-estimates[1,1]+CI[[i,1]]
+    } else  if(i==niveis+1){
+      estimates[i,1]<-CI[[i,1]]
+    } else  if(i>niveis+1){
+      estimates[i,1]<-estimates[niveis+1,1]+CI[[i,1]]  
+    }
+  }  
+  
+  for(i in 1:length(confint(model1)[,2])){
+    if(i==1){
+      estimates[i,3]<-CI[[1,2]]
+    } else  if(i>1 && i<niveis+1){
+      estimates[i,3]<-estimates[1,3]+CI[[i,2]]
+    } else  if(i==niveis+1){
+      estimates[i,3]<-CI[[i,2]]
+    } else  if(i>niveis+1){
+      estimates[i,3]<-estimates[niveis+1,3]+CI[[i,2]]  
+    }
+  }    
+  return(estimates)
+}
+
+#########################################
+## A quick example with simulated data ##
+#########################################
+
+y = rnorm(30, mean=rep(c(10, 20,30), each=10))
+x = rep(c("c","a","b"), each=10)
+z = rnorm(30,mean=rep(c(30,40,50),each=10))
+
+model1 = lm(y~x*z)
+
+table4plot(model1)
+
+data.frame(lower,estimate,upper)
+
+###########################################

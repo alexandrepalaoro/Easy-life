@@ -1,2 +1,2 @@
 # Easy-life
-Functions I made to make my life easier; not necessarily scalable.
+Functions I made in R to make my life easier while analyzing data; not necessarily scalable (or clever).
